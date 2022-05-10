@@ -7,7 +7,6 @@
 sampler2D _MainTex;
 float4 _MainTex_TexelSize;
 
-
 fixed4 VTFragFeedback(VTV2f i) : SV_Target
 {
 	float2 page = floor(i.uv * _VTFeedbackParam.x);
@@ -17,7 +16,7 @@ fixed4 VTFragFeedback(VTV2f i) : SV_Target
 	float2 dy = ddy(uv);
 	int mip = clamp(int(0.5 * log2(max(dot(dx, dx), dot(dy, dy))) + 0.5 + _VTFeedbackParam.w), 0, _VTFeedbackParam.z);
 
-	return fixed4(page / 255.0, mip / 255.0, 1);
+	return fixed4(page / 255.0, mip / 255.0, _MainTexIndex / 255.0);
 }
 
 

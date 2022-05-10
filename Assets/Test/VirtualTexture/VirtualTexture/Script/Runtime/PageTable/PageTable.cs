@@ -78,6 +78,8 @@ namespace VirtualTexture
 
 		private void Start()
         {
+            m_TableSize = CalPageSize();
+
 			m_PageTable = new TableNode(MaxMipLevel, 0, 0, TableSize, TableSize);
 
 			m_LookupTexture = new Texture2D(TableSize, TableSize, TextureFormat.RGBA32, false);
@@ -104,6 +106,25 @@ namespace VirtualTexture
             ((IFeedbackReader)GetComponent(typeof(IFeedbackReader))).OnFeedbackReadComplete += ProcessFeedback;
         }
 
+        private int CalPageSize()
+        {
+            var allTexPageDataCount = 0;
+            foreach (var tex in VTManager.Instance.textures)
+            {
+                var mipSize = tex.width;
+                while (mipSize >= VTManager.BLOCK_SIZE)
+                {
+                    allTexPageDataCount += (mipSize / VTManager.BLOCK_SIZE) * (mipSize / VTManager.BLOCK_SIZE);
+                    mipSize /= 2;
+                }
+            }
+
+            int pageSize = Mathf.CeilToInt(Mathf.Sqrt(allTexPageDataCount));
+            UnityEngine.Debug.Log($"All page Count = {allTexPageDataCount}, Page Size = {pageSize}");
+
+            return pageSize;
+        }
+
         /// <summary>
         /// 处理回读数据
         /// </summary>
@@ -114,7 +135,7 @@ namespace VirtualTexture
             // 激活对应页表
             foreach (var c in texture.GetRawTextureData<Color32>())
             {
-                ActivatePage(c.r, c.g, c.b);
+                ActivatePage(c.r, c.g, c.b, c.a);
             }
 
             // 将页表数据写入页表贴图
@@ -151,7 +172,7 @@ namespace VirtualTexture
         /// <summary>
         /// 激活页表
         /// </summary>
-        private TableNode ActivatePage(int x, int y, int mip)
+        private TableNode ActivatePage(int x, int y, int mip, int texIndex = 0)
         {
             if (mip > m_PageTable.MipLevel)
                 return null;

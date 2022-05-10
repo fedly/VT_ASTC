@@ -8,7 +8,7 @@
         Pass
         {
             CGPROGRAM
-			#include "VTShading.cginc"	
+			#include "VTShading.cginc"
             #pragma vertex VTVert
             #pragma fragment VTFragUnlit
             ENDCG

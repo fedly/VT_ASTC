@@ -37,7 +37,7 @@ fixed4 VTDebugMipmap(sampler2D tex, float2 uv) : SV_Target
 
 fixed4 VTFragDebug(VTV2f i) : SV_Target
 {
-	float2 uv = VTTransferUV(i.uv);
+	float2 uv = VTTransferUV(i.uv, _MainTexIndex);
 	fixed4 col = VTTex2D(uv) + VTGetMipColor(VTGetMipLevel(i.uv));
 	return col;
 }

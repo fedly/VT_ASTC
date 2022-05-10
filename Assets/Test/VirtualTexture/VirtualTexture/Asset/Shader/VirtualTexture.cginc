@@ -1,4 +1,6 @@
 ﻿#ifndef VIRTUAL_TEXTURE_INCLUDED
+// Upgrade NOTE: excluded shader from DX11 because it uses wrong array syntax (type[size] name)
+#pragma exclude_renderers d3d11
 #define VIRTUAL_TEXTURE_INCLUDED
 
 struct VTAppdata {
@@ -27,6 +29,10 @@ float4 _VTPageParam;
 // zw: 1 / tile count
 float4 _VTTileParam;
 
+
+int _MainTexIndex;
+
+
 sampler2D _VTLookupTex;
 
 sampler2D _VTTiledTex0;
@@ -44,7 +50,15 @@ VTV2f VTVert(VTAppdata v)
 	return o;
 }
 
-float2 VTTransferUV(float2 uv)
+// 4096 2048 1024 512 256 128 每一组尺寸纹理的起始索引
+int[6] vtSizeGroupStartIndexs;
+
+float2 GetLUTUV(float2 uv, int texIndex)
+{
+
+}
+
+float2 VTTransferUV(float2 uv, int texIndex)
 {
 	float2 uvInt = uv - frac(uv * _VTPageParam.x) * _VTPageParam.y;
 	fixed4 page = tex2D(_VTLookupTex, uvInt) * 255;
