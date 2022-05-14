@@ -5,6 +5,7 @@
 	/// </summary>
     public class LoadRequest
     {
+		public int TexureIndex { get; }
 		/// <summary>
 		/// 页表X坐标
 		/// </summary>
@@ -23,8 +24,9 @@
 		/// <summary>
 		/// 构造函数
 		/// </summary>
-        public LoadRequest(int x, int y, int mip)
+        public LoadRequest(int texIndex, int x, int y, int mip)
         {
+			TexureIndex = texIndex;
             PageX = x;
             PageY = y;
             MipLevel = mip;

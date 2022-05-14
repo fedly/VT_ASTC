@@ -16,6 +16,6 @@ namespace VirtualTexture
 		/// <summary>
 		/// 新建加载请求
 		/// </summary>
-		LoadRequest Request(int x, int y, int mip);
+		LoadRequest Request(int texIndex, int x, int y, int mip);
     }
 }

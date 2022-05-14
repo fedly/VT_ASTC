@@ -111,22 +111,22 @@ namespace VirtualTexture
 		/// <summary>
 		/// 新建加载请求
 		/// </summary>
-		public LoadRequest Request(int x, int y, int mip)
+		public LoadRequest Request(int texIndex, int x, int y, int mip)
 		{
 			// 是否已经在请求队列中
 			foreach(var r in m_RuningRequests)
 			{
-				if(r.PageX == x && r.PageY == y && r.MipLevel == mip)
+				if(r.TexureIndex == texIndex && r.PageX == x && r.PageY == y && r.MipLevel == mip)
 					return null;
 			}
 			foreach(var r in m_PendingRequests)
 			{
-				if(r.PageX == x && r.PageY == y && r.MipLevel == mip)
+				if(r.TexureIndex == texIndex && r.PageX == x && r.PageY == y && r.MipLevel == mip)
 					return null;
 			}
 
 			// 加入待处理列表
-			var request = new LoadRequest(x, y, mip);
+			var request = new LoadRequest(texIndex, x, y, mip);
 			m_PendingRequests.Add(request);
 
 			Stat.TotalRequestCount++;

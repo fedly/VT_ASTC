@@ -182,13 +182,13 @@ namespace VirtualTexture
             if (page == null)
 			{
 				// 没有可用页表，加载根节点
-                LoadPage(x, y, m_PageTable);
+                LoadPage(texIndex, x, y, m_PageTable);
                 return null;
             }
             else if (page.MipLevel > mip)
             {
                 // 可用页表不是请求的mipmap等级，请求加载下一级
-                LoadPage(x, y, page.GetChild(x, y));
+                LoadPage(texIndex, x, y, page.GetChild(x, y));
             }
 
             // 激活对应的平铺贴图块
@@ -201,7 +201,7 @@ namespace VirtualTexture
         /// <summary>
         /// 加载页表
         /// </summary>
-        private void LoadPage(int x, int y, TableNode node)
+        private void LoadPage(int texIndex, int x, int y, TableNode node)
         {
             if (node == null)
                 return;
@@ -211,7 +211,7 @@ namespace VirtualTexture
 				return;
 
             // 新建加载请求
-			node.Payload.LoadRequest = m_Loader.Request(x, y, node.MipLevel);
+			node.Payload.LoadRequest = m_Loader.Request(texIndex, x, y, node.MipLevel);
         }
 
         /// <summary>
