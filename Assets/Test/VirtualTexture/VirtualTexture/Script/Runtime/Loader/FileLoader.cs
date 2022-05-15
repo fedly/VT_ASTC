@@ -16,11 +16,12 @@ namespace VirtualTexture
 		/// 加载完成的事件回调.
 		/// </summary>
 		public event Action<LoadRequest, Texture2D[]> OnLoadComplete;
+        public event Action<LoadRequest, byte[]> OnLoadBytesComplete;
 
-		/// <summary>
-		/// 允许同时进行加载的文件数量.
-		/// </summary>
-		[SerializeField]
+        /// <summary>
+        /// 允许同时进行加载的文件数量.
+        /// </summary>
+        [SerializeField]
 		private int m_ThreadLimit = 1;
 
 		/// <summary>

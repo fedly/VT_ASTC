@@ -22,7 +22,7 @@ public static class ProcessVirtualTexture
             foreach (var tex in vtManager.textures)
             {
                 var blockCount = vtManager.VirtualTextureSize / blockSize;
-                var bytesPath = Application.dataPath + "/" + tex.name + ".bytes";
+                var bytesPath = Application.streamingAssetsPath + "/" + tex.name + ".bytes";
                 if (File.Exists(bytesPath))
                 {
                     File.Delete(bytesPath);

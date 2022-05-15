@@ -13,6 +13,8 @@ namespace VirtualTexture
 		/// </summary>
         event Action<LoadRequest, Texture2D[]> OnLoadComplete;
 
+		event Action<LoadRequest, byte[]> OnLoadBytesComplete;
+
 		/// <summary>
 		/// 新建加载请求
 		/// </summary>
