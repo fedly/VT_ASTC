@@ -15,84 +15,88 @@ namespace VirtualTexture
         public event Action<LoadRequest, Texture2D[]> OnLoadComplete;
         public event Action<LoadRequest, byte[]> OnLoadBytesComplete;
 
-        private ConcurrentDictionary<LoadRequest, bool> m_PendingRequests = new ConcurrentDictionary<LoadRequest, bool>();
-        private ConcurrentDictionary<LoadRequest, bool> m_RuningRequests = new ConcurrentDictionary<LoadRequest, bool>();
+        private ConcurrentDictionary<LoadRequest, int> m_PendingRequests = new ConcurrentDictionary<LoadRequest, int>();
+        //private ConcurrentDictionary<LoadRequest, bool> m_RuningRequests = new ConcurrentDictionary<LoadRequest, bool>();
         private ConcurrentDictionary<LoadRequest, byte[]> m_LoadedRequests = new ConcurrentDictionary<LoadRequest, byte[]>();
-
-        private Dictionary<string, bool> requests = new Dictionary<string, bool>();
+        private volatile LoadRequest _runningRequest;
 
         public LoadRequest Request(int texIndex, int x, int y, int mip)
         {
-            var key = $"{texIndex}-{x}-{y}-{mip}";
-            if (requests.ContainsKey(key)) return null;
-
-            requests.Add(key, true);
-            // 是否已经在请求队列中
-            foreach (var r in m_RuningRequests)
-            {
-                if (r.Key.TexureIndex == texIndex && r.Key.PageX == x && r.Key.PageY == y && r.Key.MipLevel == mip)
-                    return null;
-            }
-            foreach (var r in m_PendingRequests)
-            {
-                if (r.Key.TexureIndex == texIndex && r.Key.PageX == x && r.Key.PageY == y && r.Key.MipLevel == mip)
-                    return null;
-            }
-
-            // 加入待处理列表
             var request = new LoadRequest(texIndex, x, y, mip);
-            m_PendingRequests.TryAdd(request, true);
-            return request;
-        }
-
-        async Task<byte[]> LoadBlockBytesAsync(LoadRequest request)
-        {
-            if (VTManager.Instance.vtNameMap.TryGetValue(request.TexureIndex, out var name))
+            if (!VTManager.Instance.vtNameMap.TryGetValue(request.TexureIndex, out var name))
             {
-                var path = Application.streamingAssetsPath + "/" + name + ".bytes";
-                var count = VTManager.Instance.RealBlockSize * VTManager.Instance.RealBlockSize;
-                var offset = (VTManager.Instance.VTMipsCount[request.MipLevel] + request.PageY * VTManager.Instance.GetBlockCountInMip(request.MipLevel) + request.PageX) * count;
-                m_RuningRequests.TryAdd(request, true);
-                using (var fs = File.Open(path, FileMode.Open))
-                {
-                    var bytes = new byte[count];
-                    fs.Seek(offset, SeekOrigin.Begin);
-                    var c = await fs.ReadAsync(bytes, 0, count);
-                    m_RuningRequests.TryRemove(request, out var value);
-                    Debug.Assert(c == count);
-                    return bytes;
-                }
+                UnityEngine.Debug.LogError("can't find texture");
+                return null;
             }
+            if (m_LoadedRequests.ContainsKey(request) || _runningRequest.Equals(request))
+            {
+                return null;
+            }
+
+            if (m_PendingRequests.AddOrUpdate(request, (r) => 0, (r, v) => v + 1) == 0)
+            {
+                if (threadWaitOne)
+                {
+                    threadWaitOne = false;
+                    autoResetEvent.Set();
+                }
+
+                return request;
+            }
+
             return null;
         }
 
+        byte[] LoadBlockBytesAsync(LoadRequest request)
+        {
+            VTManager.Instance.vtNameMap.TryGetValue(request.TexureIndex, out var fileName);
+            var path = Application.streamingAssetsPath + "/" + fileName + ".bytes";
+            var count = VTManager.Instance.RealBlockSize * VTManager.Instance.RealBlockSize;
+            var offset = (VTManager.Instance.VTMipsCount[request.MipLevel] + request.PageY * VTManager.Instance.GetBlockCountInMip(request.MipLevel) + request.PageX) * count;
+            //m_RuningRequests.TryAdd(request, true);
+            _runningRequest = request;
+            using (var fs = File.Open(path, FileMode.Open))
+            {
+                var bytes = new byte[count];
+                fs.Seek(offset, SeekOrigin.Begin);
+                var c = fs.Read(bytes, 0, count);
+                //m_RuningRequests.TryRemove(request, out var value);
+                _runningRequest = null;
+                Debug.Assert(c == count);
+                return bytes;
+            }
+        }
+
+        volatile bool fileLoaderThreading = true;
+        volatile bool threadWaitOne = true;
+        AutoResetEvent autoResetEvent = new AutoResetEvent(false);
         // Start is called before the first frame update
-        void Start()
+        void Awake()
         {
             Task.Run(async () =>
             {
                 await Task.Yield();
-                while (true)
+                while (fileLoaderThreading)
                 {
-                    if (m_PendingRequests.Count > 0 && m_RuningRequests.Count < MaxThread)
+                    while (m_PendingRequests.Count > 0)
                     {
-                        var r = default(LoadRequest);
-                        foreach (var request in m_PendingRequests.Keys)
+                        foreach (var (request, v) in m_PendingRequests)
                         {
-                            _ = LoadBlockBytesAsync(request).ContinueWith(t =>
+                            try
                             {
-                                var bytes = t.Result;
+                                var bytes = LoadBlockBytesAsync(request);
                                 m_LoadedRequests.TryAdd(request, bytes);
-                            });
-                            r = request;
-                            break;
+                                m_PendingRequests.TryRemove(request, out var value);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.LogWarning(ex.ToString());
+                            }
                         }
-                        m_PendingRequests.TryRemove(r, out var value);
                     }
-                    else
-                    {
-                        Thread.Sleep(0);
-                    }
+
+                    threadWaitOne = true;
+                    autoResetEvent.WaitOne();
                 }
             });
         }
@@ -107,6 +111,11 @@ namespace VirtualTexture
                     OnLoadBytesComplete(request, bytes);
                 }
             }
+        }
+
+        void OnDestroy()
+        {
+            fileLoaderThreading = false;
         }
     }
 }

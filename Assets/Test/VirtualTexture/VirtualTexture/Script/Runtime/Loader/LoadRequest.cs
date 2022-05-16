@@ -31,5 +31,15 @@
             PageY = y;
             MipLevel = mip;
         }
+
+        public override int GetHashCode()
+        {
+            return TexureIndex * 100000000 + PageX * 1000000 + PageY * 1000 + MipLevel;
+		}
+
+        public override bool Equals(object obj)
+        {
+            return this.GetHashCode() == obj.GetHashCode();
+        }
     }
 }
