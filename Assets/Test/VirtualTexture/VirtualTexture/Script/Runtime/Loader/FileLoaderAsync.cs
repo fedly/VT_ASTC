@@ -10,8 +10,6 @@ namespace VirtualTexture
 {
     public class FileLoaderAsync : MonoBehaviour, ILoader
     {
-        public int MaxThread = 4;
-
         public event Action<LoadRequest, Texture2D[]> OnLoadComplete;
         public event Action<LoadRequest, byte[]> OnLoadBytesComplete;
 
@@ -28,7 +26,7 @@ namespace VirtualTexture
                 UnityEngine.Debug.LogError("can't find texture");
                 return null;
             }
-            if (m_LoadedRequests.ContainsKey(request) || _runningRequest.Equals(request))
+            if (m_LoadedRequests.ContainsKey(request) || request.Equals(_runningRequest))
             {
                 return null;
             }
@@ -55,8 +53,9 @@ namespace VirtualTexture
             var offset = (VTManager.Instance.VTMipsCount[request.MipLevel] + request.PageY * VTManager.Instance.GetBlockCountInMip(request.MipLevel) + request.PageX) * count;
             //m_RuningRequests.TryAdd(request, true);
             _runningRequest = request;
-            using (var fs = File.Open(path, FileMode.Open))
+            using (var fs = File.Open(path, FileMode.Open, FileAccess.Read))
             {
+                // TODO need bytes pool
                 var bytes = new byte[count];
                 fs.Seek(offset, SeekOrigin.Begin);
                 var c = fs.Read(bytes, 0, count);
@@ -80,7 +79,8 @@ namespace VirtualTexture
                 {
                     while (m_PendingRequests.Count > 0)
                     {
-                        foreach (var (request, v) in m_PendingRequests)
+                        var keys = m_PendingRequests.Keys;
+                        foreach (var request in keys)
                         {
                             try
                             {
@@ -116,6 +116,8 @@ namespace VirtualTexture
         void OnDestroy()
         {
             fileLoaderThreading = false;
+            m_PendingRequests.Clear();
+            m_LoadedRequests.Clear();
         }
     }
 }
