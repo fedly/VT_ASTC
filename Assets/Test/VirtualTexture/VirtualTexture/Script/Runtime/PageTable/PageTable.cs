@@ -101,9 +101,15 @@ namespace VirtualTexture
 
             m_Loader = (ILoader)GetComponent(typeof(ILoader));
             m_Loader.OnLoadComplete += OnLoadComplete;
+            m_Loader.OnLoadBytesComplete += OnLoadBytesComplete;
             m_TileTexture = (ITiledTexture)GetComponent(typeof(ITiledTexture));
             m_TileTexture.OnTileUpdateComplete += InvalidatePage;
             ((IFeedbackReader)GetComponent(typeof(IFeedbackReader))).OnFeedbackReadComplete += ProcessFeedback;
+        }
+
+        private void OnLoadBytesComplete(LoadRequest arg1, byte[] arg2)
+        {
+            throw new System.NotImplementedException();
         }
 
         private int CalPageSize()

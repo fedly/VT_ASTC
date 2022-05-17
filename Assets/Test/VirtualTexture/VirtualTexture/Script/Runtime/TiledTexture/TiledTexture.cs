@@ -195,5 +195,10 @@ namespace VirtualTexture
             target.DiscardContents();
             Graphics.Blit(source, target, m_DrawTextureMateral);
         }
+
+        public void UpdateTileBytes(Vector2Int tile, byte[] bytes)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

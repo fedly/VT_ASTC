@@ -39,7 +39,7 @@
 
         public override bool Equals(object obj)
         {
-            return this.GetHashCode() == obj.GetHashCode();
+            return obj != null && this.GetHashCode() == obj.GetHashCode();
         }
     }
 }

@@ -228,6 +228,7 @@ GameObject:
   - component: {fileID: 258772022}
   - component: {fileID: 258772021}
   - component: {fileID: 258772023}
+  - component: {fileID: 258772024}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -250,7 +251,7 @@ MonoBehaviour:
   FileDir: D:/
   FileCount: 8
   rawImage: {fileID: 508020036}
-  testLoadCount: 100000
+  testLoadCount: 1000
 --- !u!4 &258772022
 Transform:
   m_ObjectHideFlags: 0
@@ -278,7 +279,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f283e9680fe7d04eb724b5caa063c0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxThread: 1
+--- !u!114 &258772024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258772020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9b2dc7425345a543a9b5d43a7b67fcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _regionSize: {x: 16, y: 16}
 --- !u!1 &303158883
 GameObject:
   m_ObjectHideFlags: 0
@@ -1274,9 +1287,9 @@ GameObject:
   - component: {fileID: 1892255082}
   - component: {fileID: 1892255086}
   - component: {fileID: 1892255085}
-  - component: {fileID: 1892255084}
-  - component: {fileID: 1892255087}
   - component: {fileID: 1892255088}
+  - component: {fileID: 1892255090}
+  - component: {fileID: 1892255089}
   m_Layer: 0
   m_Name: VT
   m_TagString: Untagged
@@ -1314,23 +1327,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1892255084
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1892255081}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28df4d51f47b040e3b0868ba1bccf1f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_RegionSize: {x: 0, y: 0}
-  m_TileSize: 256
-  m_PaddingSize: 4
-  m_LayerCount: 1
-  m_DrawTextureShader: {fileID: 0}
 --- !u!114 &1892255085
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1361,21 +1357,6 @@ MonoBehaviour:
   m_ReadbackScale: 3
   m_DownScaleShader: {fileID: 4800000, guid: e1929a9dd6e9086459f19b065daaf141, type: 3}
   m_DebugShader: {fileID: 4800000, guid: 0b19d07428ef643b7a05b1553d24ca53, type: 3}
---- !u!114 &1892255087
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1892255081}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5eb8c3b994e3f4a1593539cc4ad9afe2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ThreadLimit: 1
-  m_FileRoot: 0
-  m_FilePathStrs: []
 --- !u!114 &1892255088
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1395,6 +1376,31 @@ MonoBehaviour:
   - {fileID: 2800000, guid: 5e89c690b72112342851acc9c6692fe9, type: 3}
   - {fileID: 2800000, guid: d1148b0989a8ec04d94a330173d35a93, type: 3}
   _virtualTextureSize: 8192
+--- !u!114 &1892255089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1892255081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9b2dc7425345a543a9b5d43a7b67fcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _regionSize: {x: 16, y: 16}
+--- !u!114 &1892255090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1892255081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f283e9680fe7d04eb724b5caa063c0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1955075392
 GameObject:
   m_ObjectHideFlags: 0

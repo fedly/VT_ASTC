@@ -16,54 +16,13 @@ public class TestASTC : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //SystemInfo.IsFormatSupported(UnityEngine.Experimental.Rendering.GraphicsFormat.RGBA_ASTC4X4_UNorm, UnityEngine.Experimental.Rendering.FormatUsage.Sample);
-        //var rawBytes = astc.GetRawTextureData();
-        var pixelDatas = astc.GetPixelData<byte>(0);
         var mipPixelDatas = default(NativeArray<byte>);
-        //var colors = astc.GetPixels(0);
         var newTex = new Texture2D(blockSize + 2 * borderSize, blockSize + 2 * borderSize, TextureFormat.ASTC_4x4, false);
         var blockDatas = LoadTexBlock(astc, ref mipPixelDatas, (blockX, blockY), 5);
         newTex.SetPixelData(blockDatas, 0);
-        //var nativeArray = new NativeArray<byte>(blockSize * blockSize, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
-
-        //var subPixelBytes = new List<byte>(blockSize * blockSize);
-        //subPixelBytes.AddRange(pixelDatas.GetSubArray(0, 32));
-        //subPixelBytes.AddRange(pixelDatas.GetSubArray(64, 32));
-        //newTex.SetPixelData(subPixelBytes.ToArray(), 0);
-
-        //unsafe
-        //{
-        //    var dst = (byte*)nativeArray.GetUnsafePtr();
-        //    var src = (byte*)pixelDatas.GetUnsafePtr();
-        //    UnsafeUtility.MemCpy(dst, src, 32);
-        //    dst += sizeof(byte) * 32;
-        //    src += sizeof(byte) * 64;
-        //    UnsafeUtility.MemCpy(dst, src, 32);
-
-        //    newTex.SetPixelData(nativeArray, 0);
-        //}
-
-        //newTex.SetPixelData<byte>(pixelDatas.GetSubArray(16, 16), 0);
-        //newTex.SetPixelData<byte>(pixelDatas.GetSubArray(32, 16), 0);
-        //newTex.SetPixelData<byte>(pixelDatas.GetSubArray(48, 16), 0);
-
-
-        //var row = blockSize / 4;
-        //var line = blockSize / 4;
-        //for (var i = 0; i < row; i++)
-        //{
-        //    for (var j = 0; j < line; j++)
-        //    {
-        //        var start = 0;
-        //        var length = 0;
-        //        newTex.SetPixelData<byte>(pixelDatas.GetSubArray(start, length), 0);
-        //    }
-        //}
-        //newTex.LoadRawTextureData(pixelDatas.GetSubArray(startIndex * 16, blockSize * blockSize));
         newTex.Apply(false, true);
         rawImage.texture = newTex;
         rawImage.uvRect = new Rect(borderSize / (float)(blockSize + 2 * borderSize), borderSize / (float)(blockSize + 2 * borderSize), blockSize / (float)(blockSize + 2 * borderSize), blockSize / (float)(blockSize + 2 * borderSize));
-        //newTex.SetPixelData(rawBytes, 0);
     }
 
     public static int borderSize = 4;

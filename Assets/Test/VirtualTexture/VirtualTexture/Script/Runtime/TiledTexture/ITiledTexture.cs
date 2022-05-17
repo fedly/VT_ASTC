@@ -52,5 +52,7 @@ namespace VirtualTexture
 		/// 更新Tile内容
 		/// </summary>
 		void UpdateTile(Vector2Int tile, Texture2D[] textures);
-    }
+
+		void UpdateTileBytes(Vector2Int tile, byte[] bytes);
+	}
 }
