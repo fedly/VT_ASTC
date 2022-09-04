@@ -44,7 +44,7 @@ namespace VirtualTexture
         }
 
         // 取当前已经就绪的节点
-        public TableNode GetAvailable(int x, int y, int mip)
+        public TableNode GetAvailable(int texIndex, int x, int y, int mip)
         {
             if (!Contains(x, y))
                 return null;
@@ -53,7 +53,7 @@ namespace VirtualTexture
             {
                 foreach (var child in m_Children)
                 {
-                    var item = child.GetAvailable(x, y, mip);
+                    var item = child.GetAvailable(texIndex, x, y, mip);
                     if (item != null)
                         return item;
                 }

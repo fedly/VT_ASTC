@@ -16,14 +16,14 @@ public class VTManager : MonoBehaviour
     public const int BLOCK_SIZE = 128;
     public const int BLOCK_BORDER = 4;
 
-    private int[] _VTMipsCount;
-    public int[] VTMipsCount
+    private float[] _VTMipsCount;
+    public float[] VTMipsCount
     {
         get
         {
             if (_VTMipsCount == null)
             {
-                _VTMipsCount = new int[8];
+                _VTMipsCount = new float[8];
                 var mip = 0;
                 var mipBlockCount = 0;
                 var mipSize = VirtualTextureSize;
@@ -64,5 +64,7 @@ public class VTManager : MonoBehaviour
         {
             vtNameMap.Add(index++, tex.name);
         }
+
+        Shader.SetGlobalFloatArray("_VTMipsCount", VTMipsCount);
     }
 }

@@ -57,7 +57,7 @@ namespace VirtualTexture
             {
                 // TODO need bytes pool
                 var bytes = new byte[count];
-                fs.Seek(offset, SeekOrigin.Begin);
+                fs.Seek((int)offset, SeekOrigin.Begin);
                 var c = fs.Read(bytes, 0, count);
                 //m_RuningRequests.TryRemove(request, out var value);
                 _runningRequest = null;

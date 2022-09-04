@@ -30,10 +30,14 @@ namespace VirtualTexture
         /// </summary>
         private TableNode m_PageTable;
 
+        private TableNode[] m_PageTables;
+
         /// <summary>
         /// 当前活跃的页表
         /// </summary>
         private Dictionary<Vector2Int, TableNode> m_ActivePages = new Dictionary<Vector2Int, TableNode>();
+
+        private List<Dictionary<Vector2Int, TableNode>> m_ActivePagesList = new List<Dictionary<Vector2Int, TableNode>>();
 
         /// <summary>
         /// 导出的页表寻址贴图
@@ -82,6 +86,12 @@ namespace VirtualTexture
 
 			m_PageTable = new TableNode(MaxMipLevel, 0, 0, TableSize, TableSize);
 
+            m_PageTables = new TableNode[VTManager.Instance.textures.Count];
+            for (int i = 0; i < VTManager.Instance.textures.Count; i++)
+            {
+                m_PageTables[i] = new TableNode(MaxMipLevel, 0, 0, TableSize, TableSize);
+            }
+
 			m_LookupTexture = new Texture2D(TableSize, TableSize, TextureFormat.RGBA32, false);
 			m_LookupTexture.filterMode = FilterMode.Point;
 			m_LookupTexture.wrapMode = TextureWrapMode.Clamp;
@@ -105,11 +115,6 @@ namespace VirtualTexture
             m_TileTexture = (ITiledTexture)GetComponent(typeof(ITiledTexture));
             m_TileTexture.OnTileUpdateComplete += InvalidatePage;
             ((IFeedbackReader)GetComponent(typeof(IFeedbackReader))).OnFeedbackReadComplete += ProcessFeedback;
-        }
-
-        private void OnLoadBytesComplete(LoadRequest arg1, byte[] arg2)
-        {
-            throw new System.NotImplementedException();
         }
 
         private int CalPageSize()
@@ -141,7 +146,7 @@ namespace VirtualTexture
             // 激活对应页表
             foreach (var c in texture.GetRawTextureData<Color32>())
             {
-                ActivatePage(c.r, c.g, c.b, c.a);
+                ActivatePage(c.a, c.r, c.g, c.b);
             }
 
             // 将页表数据写入页表贴图
@@ -178,13 +183,13 @@ namespace VirtualTexture
         /// <summary>
         /// 激活页表
         /// </summary>
-        private TableNode ActivatePage(int x, int y, int mip, int texIndex = 0)
+        private TableNode ActivatePage(int texIndex, int x, int y, int mip)
         {
             if (mip > m_PageTable.MipLevel)
                 return null;
 
             // 找到当前可用的页表
-            var page = m_PageTable.GetAvailable(x, y, mip);
+            var page = m_PageTable.GetAvailable(texIndex, x, y, mip);
             if (page == null)
 			{
 				// 没有可用页表，加载根节点
@@ -237,6 +242,11 @@ namespace VirtualTexture
 
             node.Payload.TileIndex = id;
             m_ActivePages[id] = node;
+        }
+
+        private void OnLoadBytesComplete(LoadRequest request, byte[] bytes)
+        {
+            throw new System.NotImplementedException();
         }
 
         /// <summary>
